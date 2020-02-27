@@ -1,0 +1,56 @@
+/*
+Name: Bradley Aiken
+Date: 11 April 2018
+*/
+
+body {
+	background-image: url("texture.jpg");
+}
+
+/* Instruction 4 */
+body * {
+	padding: 0;
+	margin: 0;
+}
+
+div#main {
+	width: 80%;
+	margin: 0 auto;
+	background-color: white;
+	height: 700px;
+}
+
+header {
+	background-color: rgb(51, 51, 51);
+	text-align: center;
+	width: 55em;
+}
+
+header img {
+	height: 4em;
+}
+
+nav {
+	float: left;
+	width: 15em;
+	background-color: rgb(51, 51, 51);
+}
+
+nav li {
+	display: block;
+	margin-left: 10px;
+	margin-bottom: 5px;
+}
+
+div#speech {
+	height: 500px;
+}
+
+div#speech h1 {
+	text-shadow: 5px 8px 3px grey;
+}
+
+div#speech img {
+	float: right;
+	transform: skewX(-5deg) skewY(-5deg);
+}

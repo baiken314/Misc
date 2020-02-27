@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Infinity Dash</title>
+	<style type="text/css">
+		* {
+			margin: 0px;
+			padding: 0px;
+		}
+
+		html, body {
+			height: 100%;
+		}
+
+		canvas {
+			margin: auto;
+			display: block;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="main-canvas"></canvas>
+	<script type="text/javascript">
+		var canvas = document.getElementById("main-canvas");
+		var c = canvas.getContext("2d");
+
+		canvas.width = 900;
+		canvas.height = 700;
+
+		var floorHeight = 70;
+		var floorColor = "#222";
+
+		var entitySize = 50;
+		var entitySpeed = -8;
+		var playerColor = "DodgerBlue";
+		var spikeColor = "Tomato";
+		var blockColorCount = 0;
+		var blockColor;
+
+		var firstJump;
+		var player;
+		var score;
+
+		var blockPos;
+		var blockWait;
+		var blockFig;
+		var timerCount;
+		var blocks;
+		var waitCount;
+		var floorCount;
+		var floorBottom;
+
+		function init() {
+			player = new Shape(130, canvas.height - floorHeight - entitySize, entitySize, entitySize, 0, 0, playerColor)
+
+			score = 0;
+			firstJump = true;
+			blockPos = 0;
+			blockWait = 4;
+			waitCount = 0;
+			blockFig = 0;
+			timerCount = 0;
+			blocks = [
+				floorBottom = new Shape(0, canvas.height - floorHeight, canvas.width / 4, floorHeight, 0, 0, "#333"),
+			];
+		}
+
+		function Shape(x, y, w, h, dx, dy, color, shape="square") {
+			this.x = x;
+			this.y = y;
+			this.w = w;
+			this.h = h;
+			this.dx = dx;
+			this.dy = dy;
+			this.color = color;
+			this.shape = shape;
+
+			this.draw = function() {
+				if (shape == "square") {
+					drawRect(this.x, this.y, this.w, this.h, this.color);
+				}
+				else if (shape == "spike") {
+					drawSpike(this.x, this.y, this.w, this.h, spikeColor);
+				}
+			}
+
+			this.update = function() {
+				this.x += this.dx;
+				this.y += this.dy;
+				this.draw();
+			}
+
+			this.isGrounded = function() {
+				for (i=0; i < blocks.length; i++) {
+					if ((this.x >= blocks[i].x && this.x <= blocks[i].x + blocks[i].w || this.x + this.h >= blocks[i].x && this.x + this.h <= blocks[i].x + blocks[i].w) && this.y + this.dy + this.h >= blocks[i].y && this.y + this.dy + this.h <= blocks[i].y + blocks[i].h) {
+						this.y = blocks[i].y - this.h;
+						return true;
+					}
+				}
+				return false;
+			}
+
+			this.collide = function() {
+				for (i=0; i < blocks.length; i++) {
+					if (this.x + this.w        > blocks[i].x && this.x < blocks[i].x + blocks[i].w && this.y + this.h - 10 > blocks[i].y && this.y + 10 < blocks[i].y + blocks[i].h) {
+						return true;
+					}
+				}
+				return false;
+			}
+
+			this.gravity = function() {
+				if (this.isGrounded()) {
+					this.dy = 0;
+				}
+				else {
+					this.dy += 1.4;
+				}
+				this.update();
+			}
+
+			this.jump = function() {
+				if (this.isGrounded()) {
+					this.dy = -18;
+				}
+			}
+		}
+
+		function handlePlayer() {
+			if (spacePressed) {
+				player.jump();
+			}
+
+			if (spacePressed && firstJump) {
+				firstJump = false;
+				blocks.shift();
+			}
+
+			if (player.collide()) {
+				init();
+			}
+
+			if (player.y > 5000) {
+				init();
+			}
+
+			player.gravity();
+		}
+
+		function handleBlocks() {
+			blockColorCount++;
+			blockColor = "hsl(" + blockColorCount + ", 60%, 60%)";
+			for (i=0; i < blocks.length; i++) {
+				blocks[i].update();
+			}
+		}
+
+		function followPattern() {
+			if (waitTimer()) {
+				timerCount++;
+			}
+
+			//Draw block and reset blockWait
+			if (blockWait == timerCount) {
+				makeBlock();
+				timerCount = 0;
+				if (blockFig == 0) {
+					blockWait = 4;
+				}
+				else if (blockFig == 1) {
+					blockWait = 4;
+					blockPos++;
+				}
+				else if (blockFig == 2) {
+					blockWait = 3;
+					blockPos += 2;
+				}
+				else if (blockFig == 3) {
+					blockWait = 3;
+					blockPos--;
+				}
+				else if (blockFig == 4) {
+					blockWait = 3;
+					blockPos--;
+				}
+				else if (blockFig == 5) {
+					blockWait = 5;
+					blockPos--;
+				}
+				else if (blockFig == 6) {
+					blockWait = 5;
+				}
+				else if (blockFig >= 7) {
+					blockWait = 1;
+				}
+				if (blockPos > 7) {
+					blockWait = 4;
+					blockPos = 7;
+				}
+				if (blockPos < 0) {
+					blockWait = 4;
+					blockPos = 0;
+				}
+			}
+		}
+
+		function makeBlock(shape="square") {
+			blocks.push(new Shape(canvas.width + entitySize, canvas.height - floorHeight - entitySize - (entitySize * blockPos), entitySize, entitySize, entitySpeed, 0, blockColor, shape));
+				blockFig = Math.floor(Math.random() * 12);
+		}
+
+		function waitTimer() {
+			waitCount += Math.abs(entitySpeed);
+			if (waitCount + Math.abs(entitySpeed) >= entitySize) {
+				waitCount = 0;
+				return true;
+			}
+			return false;
+		}
+
+		function drawSpike(x, y, w, h, color) {
+			c.beginPath();
+			c.moveTo(x , y + h);
+			c.lineTo(x + w, y + h);
+			c.lineTo(x + w / 2, y);
+			c.lineTo(x, y + h);
+			c.fillStyle = color;
+			c.fill();
+			c.closePath();
+		}
+
+		function drawRect(x, y, w, h, color) {
+			c.beginPath();
+			c.rect(x, y, w, h);
+			c.fillStyle = color;
+			c.fill();
+			c.closePath();
+		}
+
+		function drawScore(score) {
+        	c.font = "35px Monospace";
+        	c.fillStyle = this.color;
+        	c.fillText(score, 50, 50);
+		}
+
+		function main() {
+			c.clearRect(0, 0, canvas.width, canvas.height);
+
+			score++;
+			drawScore(score);
+
+			handleBlocks();
+			handlePlayer();
+			followPattern();
+
+			requestAnimationFrame(main);
+		}
+
+		init();
+		main();
+
+		var spacePressed = false;
+		document.addEventListener("keydown", keyDownHandler, false);
+		document.addEventListener("keyup", keyUpHandler, false);
+
+		function keyDownHandler(e) {
+			if (e.keyCode == 32) {
+				spacePressed = true;
+			}
+		}
+
+		function keyUpHandler(e) {
+			if (e.keyCode == 32) {
+				spacePressed = false;
+			}
+		}
+	</script>
+</body>
+</html>

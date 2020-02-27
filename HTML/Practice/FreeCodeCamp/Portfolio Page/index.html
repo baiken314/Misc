@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Portfolio</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=0.7">
+	<link rel="stylesheet" type="text/css" href="index.css">
+</head>
+<body>
+	<!--Everything is accessed by scrolling-->
+	<nav>
+		<ul>
+			<li><a href="#kontakto">Kontakto</a></li>
+			<li><a href="#projektartitolo">Projektaro</a></li>
+			<li><a href="#priMi">Pri mi</a></li>
+		</ul>
+	</nav>
+	<div id="mainContainer">
+		<header id="priMi">
+			<div style="display: flex; flex-wrap: wrap;">
+				<div style="flex: 40%;">
+					<img src="littleKitty.jpg" alt="Eta kato">
+				</div>
+				<div style="flex: 60%; padding: 25px;">
+					<h1>Bradley</h1>
+					<hr>
+					<h2>Universitatostudentkato kaj onta program- a&ubreve; retejfaristo. <br> &Scirc;atas programadon, videoludadon, kaj arton.</h2>
+				</div>
+			</div>
+		</header>
+		<h1 id="projektartitolo">Mia Projektaro</h1>
+		<hr>
+		<ul id="projektaro">
+			<li>
+				<a href="http://zorak2.monmouth.edu/~s1175816/SHOOT.html"><img src="shoot.png" class="projektBildo">
+				<h3>Spaceg-pafada ludo</a></h3>
+			</li>
+			<li>
+				<a href="http://zorak2.monmouth.edu/~s1175816/Infinity%20Run/"><img src="jump.png" class="projektBildo">
+				<h3>Saltludo</a></h3>
+			</li>
+			<li>
+				<a href="http://zorak2.monmouth.edu/~s1175816/bounce2.html"><img src="bounce2.png" class="projektBildo">
+				<h3>Saltantaj pilkoj</a></h3>
+			</li>
+			<li>
+				<a href="http://esperamondo.net/"><img src="esperamondo.png" class="projektBildo">
+				<h3>Minecraft-retpa&gcirc;o</a></h3>
+			</li>
+			<li>
+				<a href="http://zorak2.monmouth.edu/~s1175816/Practice/Triangle/triangle.html"><img src="triangleBall.png" class="projektBildo">
+				<h3>Triangle Ball</a></h3>
+			</li>
+			<li>
+				<a href="http://zorak2.monmouth.edu/~s1175816/BREAKOUT.html"><img src="breakout.png" class="projektBildo">
+				<h3>Breakout</a></h3>
+			</li>
+			<li>
+				<a href="http://zorak2.monmouth.edu/~s1175816/Practice/Cat%20site%202/"><img src="cats.png" class="projektBildo">
+				<h3>Kat-retpa&gcirc;o</a></h3>
+			</li>
+		</ul>
+		<footer id="kontakto">
+			<h1>Kontaktu min</h1>
+			<hr>
+			<h3>Twitter: <a href="https://twitter.com/KatoPufa">@KatoPufa</a></h3>
+			<h3>Retpo&scirc;tadreso: <a link="mailto:builderofthecake@gmail.com">builderofthecake@gmail.com</a></h3>
+			<h3>Telegram: @KatoPufa</h3>
+		</footer>
+	</div>
+	<script type="text/javascript">
+		var bildoj = document.getElementsByClassName("projektBildo");
+		function resize() {
+			for (i=0; i < bildoj.length; i++) {
+				bildoj[i].style.height = bildoj[i].width + "px";
+			}
+		}
+		setInterval(resize, 1);
+	</script>
+</body>
+</html>

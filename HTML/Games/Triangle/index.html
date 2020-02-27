@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<!--
+	This is Triangle Ball
+	===
+	Bradley Aiken
+	3/9/2018
+-->
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>Triangle Ball</title>
+	<style>
+		* {
+			padding: 0;
+			margin: 0;
+		}
+
+		html {
+			background-color: #333;
+		}
+
+		canvas {
+			background: #ddd;
+			display: block;
+			margin: 0 auto;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="mainCanvas"></canvas>
+	<script type="text/javascript">
+		var canvas = document.getElementById("mainCanvas");
+		var c = canvas.getContext('2d');
+		//Set size of canvas
+		canvas.width = 500;
+		canvas.height = canvas.width;
+
+		canvas.style.backgroundColor = 'hsl(' + 360*Math.random() + ', 90%, 90%)';
+
+		//Control vars
+		var isInMenu = true;
+		var popSound = new sound("pop.mp3");
+		var popSound2 = new sound("diePop.mp3");
+		var color = 360*Math.random();  //Ball color
+		var color2 = 360*Math.random();  //Score color
+
+		//Ball vars
+		var ballX = canvas.width/2;
+		var ballY = 150;
+		var ballRadius = .08 * canvas.width;
+
+		//Triangle vars
+		var triangleCount = 5;
+		var triangleBase = canvas.width/triangleCount;
+		var triangleY = canvas.height;
+		var triangleInvisible = parseInt(Math.random()*5);
+		var triangleSpeed = 5;
+
+		var triangles = [];
+		for (i=0; i<triangleCount; i++) {
+			triangles[i] = {isVisible: true};
+			if (i == triangleInvisible) {
+				triangles[i] = {isVisible: false};
+			}
+		}
+
+		//Scorekeeping vars
+		var score = 0;
+		var highScore = 0;
+
+		//Game functions
+		function reinitialize() {
+			ballX = canvas.width/2;
+			triangleY = canvas.height;
+			triangleInvisible = parseInt(Math.random()*5);
+			triangleSpeed = 5;
+			score = 0;
+		}
+
+		function drawBall(x, radius) {
+			c.beginPath();
+			c.arc(x, ballY, radius, 0, Math.PI*2);
+			c.fillStyle = 'hsl(' + color + ', 50%, 50%)';
+			c.fill();
+			c.closePath();
+		}
+
+		function drawTriangle(x, y, base) {
+			c.beginPath();
+			c.moveTo(x, y);
+			c.lineTo(x + base, y);
+			c.lineTo(x + base/2, y - base);
+			c.lineTo(x, y);
+			c.fillStyle = "#880020";
+			c.fill();
+			c.closePath();
+		}
+
+		function drawScore() {
+			c.font = "250px Verdana";
+			c.fillStyle = 'hsl(' + color2 + ', 90%, 80%)';
+			c.textAlign = "center";
+			c.fillText(score, canvas.width/2, 350);
+		}
+
+		function detectCollision(tx, ty, tb, bx, by, br) {
+			for (x=tx; x < tx + tb; x++) {
+				if (Math.pow(x - bx, 2) + Math.pow(ty - by, 2) < Math.pow(br, 2)) {
+					return true;
+				}
+			}
+			for (x=tx; x < tx + tb/2; x++) {
+				if (Math.pow(x - bx, 2) + Math.pow(ty - by, 2) < Math.pow(br, 2)) {
+					return true;
+				}
+				ty -= 2;
+			}
+			for (x=tx + tb/2; x < tx + tb; x++) {
+				if (Math.pow(x - bx, 2) + Math.pow(ty - by, 2) < Math.pow(br, 2)) {
+					return true;
+				}
+				ty += 2;
+			}
+			return false;
+		}
+
+		/********************************
+		 -------MAIN FUNCTION HERE-------
+		*********************************/
+		function main() {
+			if (isInMenu) {
+				menu();
+			} else {
+				c.clearRect(0, 0, canvas.width, canvas.height);
+				drawScore();
+				drawBall(ballX, ballRadius);
+				canvas.style.backgroundColor = 'hsl(' + color2 + ', 95%, 95%)';
+				
+				//Reset triangleY
+				if (triangleY-triangleBase < 0) {
+					triangleY = canvas.height;
+					//Set random triangle to invisible
+					triangleInvisible = parseInt(Math.random()*5);
+					score++;
+					if (triangleSpeed < 7) {
+						triangleSpeed += .05;
+					}
+					color = 360*Math.random();
+					color2 = 360*Math.random();
+					popSound.play();
+				}
+
+				//Move triangles up
+				triangleY -= triangleSpeed;
+
+				//Draw triangles
+				for (i=0; i<triangleCount; i++) {
+					if (i != triangleInvisible) {
+						drawTriangle(triangleBase*i, triangleY, canvas.width/triangleCount);
+					}
+					//If player hit
+					if (detectCollision(triangleBase*i, triangleY, triangleBase, ballX, ballY, ballRadius) && i != triangleInvisible) {
+						if (highScore < score) {
+							highScore = score;
+						}
+						console.log("CHECK DIE");
+						popSound2.play();
+						reinitialize();
+						isInMenu = true;
+					}
+				}
+				requestAnimationFrame(main);
+			}
+		} //End of main
+
+		var count = 0;
+		function menu() {
+			c.clearRect(0, 0, canvas.width, canvas.height);
+			c.font = "70px Verdana";
+			c.fillStyle = "#FF3030";
+			c.textAlign = "center";
+			c.fillText("TRIANGLE", canvas.width/2, 80);
+			c.fillText("BALL", canvas.width/2, 150);
+			c.font = "30px Verdana";
+			c.fillStyle = "#333333";
+			c.fillText("CLICK TO START!", canvas.width/2, 480);
+			c.beginPath();
+			c.arc(canvas.width/2, 300, 120, 0, Math.PI*2);
+			count++;
+			if (count == 15) {
+				color = 360*Math.random();
+				count = 0;
+			}
+			c.fillStyle = 'hsl(' + color + ', 50%, 50%)';
+			canvas.style.backgroundColor = "#d9d9d9";
+			c.fill()
+			c.closePath();
+			c.font = "100px Impact";
+			c.fillStyle = "rgba(255, 255, 255, .8)";
+			c.fillText(highScore, canvas.width/2, 340);
+			requestAnimationFrame(main);
+		}
+
+		//Sound control
+		function sound(src) {
+			this.sound  = document.createElement("audio");
+			this.sound.src = src;
+			this.sound.setAttribute("preload", "auto");
+			this.sound.setAttribute("controls", "none");
+			this.sound.style.display = "none";
+			document.body.appendChild(this.sound);
+			this.play = function() {
+				this.sound.play();
+			}
+			this.stop = function() {
+				this.sound.pause();
+			}
+		}
+
+		//Controllers and listeners
+		document.addEventListener("mousemove", mouseMoveHandler, false);
+		document.addEventListener("click", clickHandler, false);
+
+		//Move ball with mouse position
+		function mouseMoveHandler(e) {
+			var relativeX = e.clientX - canvas.offsetLeft;
+			if (relativeX-ballRadius > 0 && relativeX+ballRadius < canvas.width) {
+				ballX = relativeX;
+			} else if (relativeX-ballRadius < 0) {
+				ballX = ballRadius;
+			} else if (relativeX+ballRadius > canvas.width) {
+				ballX = canvas.width-ballRadius;
+			}
+		}
+
+		//Click to go to main
+		function clickHandler() {
+			isInMenu = false;
+		}
+
+		main();
+	</script>
+</body>
+</html>

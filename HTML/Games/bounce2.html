@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>Bouncing</title>
+	<style>
+		* {
+			margin: 0;
+		}
+
+		canvas {
+			background-color: #000;
+			display: block;
+			margin: 0;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="mainCanvas"></canvas>
+	<script>
+		var canvas = document.getElementById("mainCanvas");
+		var c = canvas.getContext("2d");
+
+		canvas.width = innerWidth;
+		canvas.height = innerHeight;
+
+		colors = [
+			"#d04040",
+			"#40d040",
+			"#d08040",
+			"#b040d0",
+			"#4080d0",
+			"SlateBlue",
+			"DodgerBlue",
+			"Tomato",
+			"#888",
+			"#1267ab",
+			"#39cd93",
+			"#e2c",
+			"Orange",
+			"MediumSeaGreen",
+			"White",
+		];
+
+		gravity = .75;
+		friction = .995;
+
+		//Create a random ball array
+		var balls = [];
+		var minRadius = 2.5;
+
+		function init() {
+			canvas.width = innerWidth;
+			canvas.height = innerHeight;	
+		}
+
+		function makeRandomBall() {
+			var x = Math.random() * (canvas.width-180) + 90;
+			var y = Math.random() * -100 - 150;
+			var dx = Math.random() * 150 - 75;
+			var dy = Math.random() * -100;
+			var radius = Math.random() * 80 + 15;
+			var color = colors[Math.floor(Math.random() * colors.length)];
+			balls.push(new Ball(x, y, dx, dy, radius, color));
+		}
+
+		function Ball(x, y, dx, dy, radius, color) {
+			this.x = x;
+			this.y = y;
+			this.dx = dx;
+			this.dy = dy;
+			this.radius = radius;
+			this.color = color;
+
+			this.draw = function() {
+				c.beginPath();
+				c.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+				c.lineWidth = this.radius / 5;
+				if (c.lineWidth < 3) {c.lineWidth = 3;}
+				c.strokeStyle = this.color;
+				c.stroke();
+				c.closePath();
+			}
+
+			this.update = function() {
+				//Ball y bounce, reduce y velocity
+				if (this.y + this.radius > canvas.height) {
+					this.y = canvas.height - this.radius + 1;
+					this.dy = -this.dy * gravity;
+					if (this.radius > minRadius) {
+						this.radius /= 1.05 + Math.random()/3;
+
+						//Generate particle ball
+						if (Math.floor(Math.random() * 2) == 0) {
+							balls.push(new Ball(this.x, this.y - this.radius, Math.random() * this.dy - this.dy/2, Math.random() * this.dy * 1.3, this.radius/2 + 1, this.color));
+						}
+						if (this.radius > 75) {
+							balls.push(new Ball(this.x, this.y - this.radius, Math.random() * this.dy - this.dy/2, Math.random() * this.dy * 1.3, this.radius/2 + 1, this.color));
+						}
+					}
+				}
+
+				//Simulate gravity 
+				else {
+					this.dy += .7;
+				}
+
+				this.y += this.dy;
+
+				//Ball x bounce
+				if (this.x + this.radius > canvas.width || this.x - this.radius < 0) {
+					this.dx = -this.dx;
+				}
+				//Don't let out of x bounds
+				if (this.x + this.radius > canvas.width) {
+					this.x = canvas.width - this.radius;
+				}
+				if (this.x - this.radius < 0) {
+					this.x = this.radius;
+				}
+				//Reduce x velocity
+				this.dx *= friction;
+				this.x += this.dx;
+
+				this.draw();
+			}
+		}
+
+		window.addEventListener("resize", function() {
+			init();
+		});
+
+		function main() {
+			c.clearRect(0, 0, canvas.width, canvas.height);
+
+			//Update balls
+			for (i=0; i < balls.length; i++) {
+				if (balls[i].radius > minRadius) {
+					balls[i].update();
+				}
+			}
+
+			//Generate balls at a random time interval
+			if (Math.floor(Math.random() * 50) == 0) {
+				makeRandomBall();
+			}
+
+			requestAnimationFrame(main);
+		}
+
+		main();
+	</script>
+</body>
+</html>

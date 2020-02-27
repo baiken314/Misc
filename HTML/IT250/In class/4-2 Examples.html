@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Examples</title>
+	<style type="text/css">
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+			font-family: Monospace;
+		}
+
+		html, body {
+			height: 100%;
+			background-color: #fff;
+		}
+
+		div#mainContainer {
+			width: 90%;
+			height: 100%;
+			max-width: 1000px;
+			min-width: 500px;
+			padding: 15px;
+			margin-left: auto;
+			margin-right: auto;
+			background: linear-gradient(#def, #789);
+		}
+
+		div#mainContainer::after {
+			display: block;
+			content: "";
+			clear: both;
+			height: 0;
+		}
+
+		h1 {
+			position: absolute;
+			top: 30%;
+			font-size: 60px;
+			text-align: center;
+		}
+
+		.shadow {
+			text-shadow: #777 5px 5px 5px;
+		}
+	</style>
+</head>
+<body>
+	<h1 id="spinner">This is a header, welcome to the page! It is a really good page, is it not?</h1>
+	<script type="text/javascript">
+		var spinner = document.getElementById('spinner');
+		var i = 110;
+		function spinElement() {
+			spinner.style.transform = "perspective(" + 10 + "px) rotateX(" + i + "deg)";
+			i += .1;		
+		}
+		setInterval(spinElement, 1);
+	</script>
+</body>
+</html>

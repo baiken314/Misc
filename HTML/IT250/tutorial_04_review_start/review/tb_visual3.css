@@ -1,0 +1,76 @@
+@charset "utf-8";
+
+/*
+   New Perspectives on HTML5 and CSS3, 7th Edition
+   Tutorial 4
+   Review Assignment
+   
+   Design Style Sheet for Tree and Book Family Home Page
+   Author: Bradley Aiken
+   Date:   4 April 2018
+   
+   Filename: tb_visual3.css
+
+*/
+
+/* HTML Styles */
+html {
+	background-image: url("tb_back5.png");
+}
+
+/* Page Body Styles */
+body {
+   border-left: solid 3px rgb(169, 130, 88);
+   border-right: solid 3px rgb(169, 130, 88);
+   box-shadow: 25px 0px 35px rgb(53, 21, 0),
+   			   -25px 0px 35px rgb(53, 21, 0);
+}
+
+/* Main Styles */
+main {
+   background: url("tb_back7.png") 100% / cover no-repeat padding-box;
+   box-shadow: inset 10px 0 25px rgb(71, 71, 71),
+   			   inset -10px 0 25px rgb(71, 71, 71);
+}
+
+main header h1 {
+	text-shadow: rgb(221, 221, 221) 1px 1px 0,
+				 rgba(41, 41, 41, .9) 5px 5px 20px;
+}
+
+/* Figure Box Styles */
+figure {
+   width: 70%;
+   margin: 10px auto ;
+}
+
+figure img {
+	border-style: solid;
+	border-width: 25px;
+	border-image: url("tb_frame.png") 60 stretch;
+	display: block;
+	width: 100%;
+	-webkit-filter: sepia(80%);
+	filter: sepia(80%);
+}
+
+figcaption {
+	font-family: 'Palatino Linotype', Palatino, 'Times New Roman', serif;
+	font-style: italic;
+	padding: 10px 0 10px 0;
+	text-align: center;
+}
+
+/* Article Styles */
+article {
+	background: url("tb_back6.png") bottom right / 15% no-repeat;
+	border-bottom: double 8px rgb(147, 116, 68);
+	border-right: double 8px rgb(147, 116, 68);
+	border-radius: 0 0 85px 0;
+	box-shadow: inset -10px -10px 25px rgba(184, 154, 112, .7);
+}
+
+/* Footer Styles */
+footer {
+	background: linear-gradient(325deg, rgb(180, 148, 104), 20%, rgb(40, 33, 23) 60%);
+}

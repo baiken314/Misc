@@ -1,0 +1,47 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+html {
+	background-color: #eee;
+	font-family: Helvetica, sans-serif;
+}
+
+html, body {
+	height: 100%;
+}
+
+div#main-container {
+	width: 90%;
+	margin: 0 auto;
+}
+
+header h1 {
+	color: White;
+	font-size: 75px;
+	background-color: #523737;
+	text-align: center;
+	padding: 20px;
+	border-radius: 15px;
+}
+
+header h2 {
+	width: 75%;
+	color: #eee;
+	font-size: 30px;
+	background-color: #383535;
+	text-align: center;
+	padding: 15px;
+	margin: 15px auto;
+	border-radius: 15px;
+}
+
+nav ul li {
+	float: left;
+}
+
+article::first-of-type {
+	clear: both;
+}

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>WUUUU</title>
+	<style type="text/css">
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+		body, canvas {
+			height: 100%;
+			width: 100%;
+			background-color: black;
+			cursor: none;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="main-canvas"></canvas>
+	<script type="text/javascript">
+		var canvas = document.getElementById("main-canvas");
+		var ctx = canvas.getContext("2d");
+
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+
+		var genX = undefined;
+		var genY = undefined;
+
+		var rectangles = [];
+
+		function Rectangle(x, y, width, height, color, dx = 0, dy = 0) {
+			this.x = x;
+			this.y = y;
+			this.width = width;
+			this.height = height;
+			this.color = color;
+			this.dx = dx;
+			this.dy = dy;
+
+			this.update = function() {
+				drawLine(this.x, this.y, this.x + this.dx, this.y + this.dy, this.width, this.color);
+				this.x += this.dx / 3;
+				this.y += this.dy / 3;
+			}
+		}
+
+		function drawRect(x, y, width, height, color) {
+			ctx.beginPath();
+			ctx.rect(x, y, width, height, color);
+			ctx.fillStyle = color;
+			ctx.fill();
+			ctx.closePath();
+		}
+
+		function drawLine(x, y, x2, y2, width, color) {
+			ctx.beginPath();
+			ctx.moveTo(x, y);
+			ctx.lineTo(x2, y2);
+			ctx.lineWidth = width;
+			ctx.strokeStyle = color;
+			ctx.stroke();
+			ctx.closePath();
+		}
+
+		function main() {
+
+			// clear screen
+			drawRect(0, 0, innerWidth, innerHeight, "black");
+			ctx.globalAlpha = 1;
+
+			// make lines
+			for (var i = 0; i < 6; i++) {
+				var speed = Math.random() * 3 + 1;
+				var dir = Math.random() * 2 * Math.PI;
+				var dx = Math.cos(dir) * speed;
+				var dy = Math.sin(dir) * speed;
+				rectangles.push(new Rectangle(genX, genY, .5, .5, "hsl(" + Math.random() * 360 + ", 70%, 70%)", dx, dy));
+			}
+
+			// update lines
+			for (var i = 0; i < rectangles.length; i++) {
+				if (rectangles[i].x < -rectangles[i].width || rectangles[i].y < -rectangles[i].height || rectangles[i].x > innerWidth || rectangles[i].y > innerHeight) {
+					rectangles.splice(i, 1);
+				}
+				rectangles[i].dx *= 1.01;
+				rectangles[i].dy *= 1.01;
+				rectangles[i].width *= 1.01;
+				rectangles[i].height *= 1.005;
+				rectangles[i].update();
+			}
+
+			requestAnimationFrame(main);
+		}
+
+		main();
+
+		document.addEventListener("mousemove", mouseMove, false);
+
+		function mouseMove(e) {
+			genX = e.clientX;
+			genY = e.clientY;
+		}
+	</script>
+</body>
+</html>

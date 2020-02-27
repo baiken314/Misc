@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Survey Page</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="index.css">
+	<link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet'>
+	<link href='https://fonts.googleapis.com/css?family=Anton' rel='stylesheet'>
+</head>
+<body>
+	<div id="main-container">
+		<header>
+			<h1 id="title">Overwatch Tespa League Application</h1>
+			<p id="description">Please fill in the following fields so that we can determine if you can play on the league and what position you would play.</p>
+		</header>
+		<main>
+			<form id="survey-form">
+				<p class="field">Full name:</p>
+				<input class="text-field" type="text" placeholder="Enter your name" id="name" required> <br>
+				<p class="field">Email:</p>
+				<input class="text-field" type="email" placeholder="Enter your email" pattern=".+@.+" id="email" required> <br>
+				<p class="field">Age:</p>
+				<input class="text-field" type="number" placeholder="Age" id="number" min="18" max="130" required> <br>
+				<div class="break"></div>
+				<p class="field">Preferred role:</p>
+				<select style="padding: 3px; margin-bottom: 5px; margin-top: 5px; float: left; clear: both;" required>
+					<option value="" disabled selected>Select a role</option>
+					<option value="tank">Tank</option>
+					<option value="damage">Damage</option>
+					<option value="support">Support</option>
+				</select> <br>
+				<div class="break"></div>
+				<p class="box">How long have you been playing Overwatch?</p>
+				<label class="checkbox"><input class="checkbox" type="radio" name="years-experience" required>Under 6 months</label>
+				<label class="checkbox"><input class="checkbox" type="radio" name="years-experience">Over 6 months</label>
+				<label class="checkbox"><input class="checkbox" type="radio" name="years-experience">Over 1 year</label>
+				<label class="checkbox"><input class="checkbox" type="radio" name="years-experience">Over 2 years</label>
+				<label class="checkbox"><input class="checkbox" type="radio" name="years-experience">Over 3 years</label> <br>
+				<p class="box">Heros you are comfortable playing as:</p>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="d-va">D.va</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="orisa">Orisa</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="reinhardt">Reinhardt</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="roadhog">Roadhog</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="winston">Winston</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="wrecking-ball">Wrecking Ball</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="zarya">Zarya</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="bastion">Bastion</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="doomfist">Doomfist</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="genji">Genji</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="hanzo">Hanzo</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="junkrat">Junkrat</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="mccree">McCree</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="mei">Mei</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="pharah">Pharah</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="reaper">Reaper</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="soldier-76">Soldier: 76</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="sombra">Sombra</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="symmetra">Symmetra</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="tobjorn">Tobjörn</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="tracer">Tracer</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="widowmaker">Widowmaker</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="ana">Ana</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="brigitte">Brigitte</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="lucio">Lúcio</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="mercy">Mercy</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="moira">Moira</label>
+				<label class="checklist"><input class="checklist" type="checkbox" name="hero" value="zenyatta">Zenyatta</label> <br>
+				<div class="break"></div>
+				<p style="float: none; font-size: 17px; margin-top: 10px;">Additional comments:</p> <br>
+				<textarea rows="4" rols="40"></textarea><br>
+				<div class="break"></div>
+				<button type="submit">Submit</button>
+			</form>
+		</main>
+	</div>
+</body>
+</html>

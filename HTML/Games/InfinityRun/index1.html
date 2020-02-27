@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Infinity Dash</title>
+	<style type="text/css">
+		* {
+			margin: 0px;
+			padding: 0px;
+		}
+
+		html, body {
+			height: 100%;
+		}
+
+		canvas {
+			margin: auto;
+			display: block;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="main-canvas"></canvas>
+	<script type="text/javascript">
+		var canvas = document.getElementById("main-canvas");
+		var c = canvas.getContext("2d");
+
+		canvas.width = 900;
+		canvas.height = 700;
+
+		var floorHeight = 70;
+		var floorColor = "#222";
+
+		var entitySize = 50;
+		var entitySpeed = -8;
+		var playerColor = "DodgerBlue";
+		var spikeColor = "Tomato";
+		var blockColorCount = 0;
+		var blockColor;
+
+		var firstJump;
+		var player;
+
+		var blocks;
+		var blockPos;
+		var blockWait;
+		var blockFig;
+
+		var floorCount;
+		var floorBottom;
+
+		var blockDistance;
+		var totalDistance;
+		var totalBlocks;
+
+		function init() {
+			player = new Shape(130, canvas.height - floorHeight - entitySize, entitySize, entitySize, 0, 0, playerColor)
+
+			firstJump = true;
+			blockPos = 0;
+			blockWait = 3;
+			blockFig = 0;
+
+			blocks = [
+				floorBottom = new Shape(0, canvas.height - floorHeight, canvas.width / 4, floorHeight, 0, 0, "#333"),
+			];
+
+			blockDistance = 0;
+			totalDistance = 0;
+			totalBlocks = 0;
+		}
+
+		function Shape(x, y, w, h, dx, dy, color, shape="square") {
+			this.x = x;
+			this.y = y;
+			this.w = w;
+			this.h = h;
+			this.dx = dx;
+			this.dy = dy;
+			this.color = color;
+			this.shape = shape;
+
+			this.draw = function() {
+				if (shape == "square") {
+					drawRect(this.x, this.y, this.w, this.h, this.color);
+				}
+				else if (shape == "spike") {
+					drawSpike(this.x, this.y, this.w, this.h, spikeColor);
+				}
+			}
+
+			this.update = function() {
+				this.x += this.dx;
+				this.y += this.dy;
+				this.draw();
+			}
+
+			this.isGrounded = function() {
+				for (i=0; i < blocks.length; i++) {
+					if ((this.x >= blocks[i].x && this.x <= blocks[i].x + blocks[i].w || this.x + this.h >= blocks[i].x && this.x + this.h <= blocks[i].x + blocks[i].w) && this.y + this.dy + this.h >= blocks[i].y && this.y + this.dy + this.h <= blocks[i].y + blocks[i].h) {
+						this.y = blocks[i].y - this.h;
+						return true;
+					}
+				}
+				return false;
+			}
+
+			this.collide = function() {
+				for (i=0; i < blocks.length; i++) {
+					if (this.x + this.w        > blocks[i].x && this.x < blocks[i].x + blocks[i].w && this.y + this.h - 10 > blocks[i].y && this.y + 10 < blocks[i].y + blocks[i].h) {
+						return true;
+					}
+				}
+				return false;
+			}
+
+			this.gravity = function() {
+				if (this.isGrounded()) {
+					this.dy = 0;
+				}
+				else {
+					this.dy += 1.4;
+				}
+				this.update();
+			}
+
+			this.jump = function() {
+				if (this.isGrounded()) {
+					this.dy = -18;
+				}
+			}
+		}
+
+		function handlePlayer() {
+			if (spacePressed) {
+				player.jump();
+			}
+
+			if (spacePressed && firstJump) {
+				firstJump = false;
+				blocks.shift();
+			}
+
+			if (player.collide()) {
+				init();
+			}
+
+			if (player.y > 5000) {
+				init();
+			}
+
+			player.gravity();
+		}
+
+		function handleBlocks() {
+			blockColorCount += 0.3;
+			blockColor = "hsl(" + blockColorCount + ", 60%, 60%)";
+			for (i=0; i < blocks.length; i++) {
+				blocks[i].update();
+			}
+		}
+
+		function makeBlock(shape="square") {
+			blocks.push(new Shape(canvas.width + entitySize, canvas.height - floorHeight - entitySize - (entitySize * blockPos), entitySize, entitySize, entitySpeed, 0, blockColor, shape));
+				blockFig = Math.floor(Math.random() * 12);
+		}
+
+		function handleVars() {
+			totalDistance += Math.abs(entitySpeed);
+			blockDistance += Math.abs(entitySpeed);
+			if (blockDistance + Math.abs(entitySpeed) >= entitySize) {
+				blockDistance = 0;
+				totalBlocks++;
+				followPattern();
+			}
+		}
+
+		function followPattern() {
+			
+		}
+
+		function drawSpike(x, y, w, h, color) {
+			c.beginPath();
+			c.moveTo(x , y + h);
+			c.lineTo(x + w, y + h);
+			c.lineTo(x + w / 2, y);
+			c.lineTo(x, y + h);
+			c.fillStyle = color;
+			c.fill();
+			c.closePath();
+		}
+
+		function drawRect(x, y, w, h, color) {
+			c.beginPath();
+			c.rect(x, y, w, h);
+			c.fillStyle = color;
+			c.fill();
+			c.closePath();
+		}
+
+		function main() {
+			c.clearRect(0, 0, canvas.width, canvas.height);
+
+			handleBlocks();
+			handlePlayer();
+			handleVars();
+
+			requestAnimationFrame(main);
+		}
+
+		init();
+		main();
+
+		var spacePressed = false;
+		document.addEventListener("keydown", keyDownHandler, false);
+		document.addEventListener("keyup", keyUpHandler, false);
+
+		function keyDownHandler(e) {
+			if (e.keyCode == 32) {
+				spacePressed = true;
+			}
+		}
+
+		function keyUpHandler(e) {
+			if (e.keyCode == 32) {
+				spacePressed = false;
+			}
+		}
+	</script>
+</body>
+</html>

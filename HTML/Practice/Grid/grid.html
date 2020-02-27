@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>Grid</title>
+</head>
+<body>
+	<canvas id="mainCanvas" height="640" width="640"></canvas>
+	<script>
+		var canvas = document.getElementById("mainCanvas");
+		var ctx = canvas.getContext("2d");
+		
+		function drawRect(x,y) {
+			ctx.beginPath();
+			ctx.rect(x,y,32,32);
+			ctx.fillStyle = "#888";
+			ctx.fill();
+			ctx.closePath();
+		}
+		
+		var x = 0;
+		var y = 0;
+		for (c=0; c<10; c++) {
+			for (r=0; r<10; r++) {
+				drawRect(x,y);
+				y += 40;
+			}
+			x += 40;
+			y = 0;
+		}
+	</script>
+</body>
+</html>

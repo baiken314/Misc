@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Retejo</title>
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-widthm initial-scale=1"/>
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+	
+		body {
+			font-family: Arial, Helvetica, sans-serif;
+		}
+		
+		header {
+			padding: 80px;
+			text-align: center;
+
+			background: SlateBlue;
+			color: white;
+		}
+		
+		header h1 {
+			font-size: 40px;
+		}
+		
+		nav {
+			overflow: hidden;
+			background-color: #333;
+		}
+		
+		nav a {
+			float: left; /*Make links side-by-side*/
+			display: block;
+			color: white;
+			padding: 20px;
+			text-decoration: none;
+			text-align: center;
+		}
+		
+		nav a.right {
+			float: right;
+		}
+		
+		nav a:hover {
+			background-color: #ddd;
+			color: black;
+		}
+		
+		footer {
+			padding: 20px;
+			text-align: center;
+			background: #ddd;
+		}
+		
+		/*Layout*/
+		.row {
+			display: flex;
+			flex-wrap: wrap;
+		}
+		
+		.side {
+			flex: 35%;
+			background-color: #f1f1f1;
+			padding: 20px;
+		}
+		
+		.main {
+			flex: 65%;
+			background-color: white;
+			padding: 20px;
+		}
+		
+		/*Accordian*/
+		.accordian {
+			background-color: #eee;
+			color: #444;
+			cursor: pointer;
+			padding: 10px;
+			width: 100%;
+			font-size: 1em;
+			color: black;
+			text-align: left;
+			border: none;
+			outline: none;
+			transition: 0.4s;
+		}
+		
+		.accordian:after, .mobileAccordian:after {
+			content: '\02795';
+			font-size: 10px;
+			color: #777;
+			float: right;
+			margin-left: 5px;
+		}
+		
+		.active:after {
+			content: "\2796";
+		}
+		
+		.active, .accordian:hover {
+			background-color: #ccc;
+		}
+		
+		.panel {
+			padding: 0 10px;
+			margin-bottom: 10px;
+			background-color: white;
+			max-height: 0;
+			overflow: hidden;
+			transition: max-height 0.2s ease-out;
+		}
+		
+		.mobileAccordian {
+			display: none;
+		}
+		
+		/*Media queries*/
+		@media screen and (max-width: 700px) {
+			.row {
+				flex-direction: column;
+			}
+		}
+		
+		@media screen and (max-width: 400px) {
+			.mobileAccordian {
+				display: block;
+				background-color: #333;
+				color: #eee;
+				cursor: pointer;
+				padding: 20px;
+				width: 100%;
+				font-size: 1em;
+				text-align: left;
+				border: none;
+				outline: none;
+				transition: 0.4s;
+			}
+			
+			.mobileAccordian:hover {
+				background-color: #333;
+			}
+			
+			.mobilePanel {
+				padding: 0 10px;
+				background-color: #333;
+				max-height: 0;
+				overflow: hidden;
+				transition: max-height 0.2s ease-out;
+			}
+		
+			nav a {
+				float: none;
+				width: 100%;
+				padding: 20px 0px 20px 0px
+			}
+		}
+	</style>
+</head>
+<body>
+	<header>
+		<h1>Mia Retejo</h1>
+		<p>Retejo farita de mi</p>
+	</header>
+	<nav>
+		<button class="mobileAccordian">Malfermi</button>
+		<div class="mobilePanel">
+			<a href="#">Ligilo</a>
+			<a href="#">Ligilo</a>
+			<a href="#">Ligilo</a>
+			<a href="#" class="right">Ligilo</a>
+		</div>
+	</nav>
+	<div class="row">
+		<div class="side">
+			<h1>Saluton al cxiuj</h1>
+			<button class="accordian">Kio estas kato?</button>
+			<div class="panel">
+				<p>Kato estas karesebla belajxo, kiu povas felicxigi aliajn homojn kaj katojn.</p>
+			</div>
+			<button class="accordian">Kial tiu kato pufas?</button>
+			<div class="panel">
+				<p>Cxar tiu kato estas pufa je amo kaj cxarmeco!</p>
+			</div>
+		</div>
+		<div class="main">
+			<h1>Jen iom da teksto</h1>
+			<h2>Cxu fari por la katoj?</h2>
+			<p>Mi vere volas povi krei retejon por miaj katoj sed estas sxajne iom malfacile efektive krei retejon cxar estas tiom multe da aferoj kiujn oni bezonas lerni antaux ol oni povas bone regi la retejokreilon, cxu ne? Mi estas en kurso specife por lerni kiel krei retejojn kaj tiu kurso estas vere malrapidega.</p>
+			<p>Devos mi peni, cxar miaj programkapabloj bezonas esti tre bonaj por ke mi povu trovi bonan laborpostenon estontece kvankam mi devos labori por grandacxa firmao.</p>
+		</div>
+	</div>
+	<footer>
+		<h2>Malsuprajxo</h2>
+	</footer>
+	<script>
+		var acc = document.getElementsByClassName("accordian");
+		var macc = document.getElementsByClassName("mobileAccordian");
+		var i;
+		
+		for (i=0; i < acc.length; i++) {
+			acc[i].addEventListener("click", function() {
+				this.classList.toggle("active");
+				
+				var panel = this.nextElementSibling;
+				if (panel.style.maxHeight) {
+					panel.style.maxHeight = null;
+				} else {
+					panel.style.maxHeight = panel.scrollHeight + "px";
+				}
+			});
+		}
+		
+		for (i=0; i < acc.length; i++) {
+			macc[i].addEventListener("click", function() {
+				this.classList.toggle("active");
+				
+				var mobilePanel = this.nextElementSibling;
+				if (mobilePanel.style.maxHeight) {
+					mobilePanel.style.maxHeight = null;
+				} else {
+					mobilePanel.style.maxHeight = mobilePanel.scrollHeight + "px";
+				}
+			});
+		}
+	</script>
+</body>
+</html>

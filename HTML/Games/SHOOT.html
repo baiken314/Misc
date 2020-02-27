@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<!-- Test game
+    
+    @Date: 14 March 2018
+    @Authors: Bradley Aiken, Rion Thomas
+-->
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>SHOOOOT</title>
+    <style>
+        * {
+            margin: 0;
+        }
+
+        html {
+            background-color: #eee;
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background-color: #050505;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="mainScreen"></canvas>
+    <script>
+        var canvas = document.getElementById('mainScreen');
+        var c = canvas.getContext('2d');
+
+        var player = new Body(canvas.width / 2 - 40, canvas.height - 100, 80, 45, 0, 0, "shipA", "#eee");
+
+        var score = 0;
+        var colorCount = 0; //Used for rainbow bullets
+        var reloadTime = 12;
+        var playerSpeed = 8;
+        var shootBonusTime = 0;
+        var movmentBonusTime = 0;
+        var invincibilityTime = 0;
+
+        var bullets = [];
+        var enemies = [];
+        var particles = [];
+        var scoreLabels = [];
+        var items = [];
+
+        function resize() {
+            canvas.width = innerWidth;
+            canvas.height = innerHeight;
+
+            player.x = canvas.width / 2 - player.width / 2
+            player.y = canvas.height - 30 - player.height;
+        }
+
+        /*******
+         Classes
+         *******/
+        function Item(x, y) {
+        	// 0 - Reload time down
+        	// 1 - Movement speed up
+        	// 2 - Enemy bomb, destroy half of enemies
+        	// 3 - Bonus points
+        	// 4 - Invincibility
+        	this.body = new Body(x, y, 30, 30, 0, 3, "square", "#6ae");
+        	this.type = Math.floor(Math.random() * 5);
+
+        	if (this.type == 0) {
+        		this.body.color = "#6ae";
+        	}
+        	else if (this.type == 1) {
+        		this.body.color = "#6e7";
+        	}
+        	else if (this.type == 2) {
+        		this.body.color = "hsl(" + colorCount + ", 60%, 60%)";
+        	}
+        	else if (this.type == 3) {
+        		this.body.color = "#fa3";
+        	}
+        	else if (this.type == 4) {
+        		this.body.color = "#766";
+        	}
+
+        	this.update = function() {
+	        	this.body.update();
+
+	        	if (this.type == 2) {
+	        		this.body.color = "hsl(" + Math.random() * 360 + ", 75%, 75%)";
+	        	}
+
+	        	this.body.draw();
+	        }
+
+	        this.activate = function() {
+	        	for (i = 0; i < Math.random() * 10 + 15; i++) {
+	        		makeParticle((this.body.x + this.body.x2) / 2, this.body.y2, 5, this.body.color);
+	        	}
+
+	        	if (this.type == 0) {
+	        		shootBonusTime = 250;
+	        	}
+	        	else if (this.type == 1) {
+	        		movmentBonusTime = 500;
+	        	}
+	        	else if (this.type == 2) {
+	        		for (i = 0; i < 500; i++) {
+	        			makeParticle((this.body.x + this.body.x2) / 2, this.body.y2, Math.random() * 60 + 10, "hsl(" + Math.random() * 360 + ", 60%, 60%)");
+	        		}
+	        		if (enemies.length > 0) {
+	        			for (i = 0; i < enemies.length; i++) {
+	        				if (Math.random() < .75) {
+	        					enemies[i].hp -= 50;
+	        				}
+	        			}
+	        		}
+	        		if (bullets.length > 0) {
+	        			for (i = 0; i < bullets.length; i++) {
+	        				if (bullets[i].parent == "enemy" && bullets[i].on) {
+	        					bullets[i].on = false;
+	        					for (j = 0; j < Math.random() * 10 + 5; j++) {
+	        						makeParticle((bullets[i].x + bullets[i].x2) / 2, (bullets[i].y + bullets[i].y2) / 2, 5, "Tomato");
+	        					}
+	        				}
+	        			}
+	        		}
+	        	}
+	        	else if (this.type == 3) {
+	        		score += 500;
+	        	}
+	        	else if (this.type == 4) {
+	        		invincibilityTime = 500;
+	        	}
+	        }
+        }
+
+        //This contains the stats and path of a ship
+        function Ship(type = undefined) {
+        	// undefined - use random enemy type
+        	// 0 - Basic white enemy, random size
+        	// 1 - Fast red enemy, moves differently and is worth more points
+        	// 2 - Mothership enemy, makes more ships when destoryed
+
+        	this.type = type;
+        	if (this.type == undefined) {
+        		if (Math.random() < .9) {
+        			this.type = 0;
+        		}
+        		else {
+        			this.type = 1;
+        		}
+        	}
+
+        	//Create ship's body
+        	if (this.type == 0) {
+        		this.width = Math.random() * 60 + 40;
+	            this.height = this.width / 2;
+	            this.x = Math.random() * (innerWidth - this.width);
+	            this.y = -this.height - 10;
+	            this.shape = "shipB";
+	            this.color = "#ccc";
+        	}
+            else if (this.type == 1) {
+            	this.width = 50;
+            	this.height = this.width / 2;
+            	this.x = Math.random() * (innerWidth - this.width);
+            	this.y = Math.random() * (innerHeight / 2 - this.height) + this.height;
+            	this.shape = "shipB";
+            	this.color = "#d78";
+            }
+            this.body = new Body(this.x, this.y, this.width, this.height, 0, 0, this.shape, this.color);     
+
+            //Ship's control variables
+            if (this.type == 0) {
+	            this.maxY = Math.random() * (canvas.height / 2.5);
+	            this.dx = 13 * (Math.random() - .5);
+	            this.bulletSpeed = 12;
+	            this.shootTimer = 100;
+	            this.hp = this.width / 2;
+            }
+            else if (this.type == 1) {
+	        	this.hp = 10;
+	        	this.warpTimes = 5;
+            	this.bulletSpeed = 10;
+            	this.shootTimer = 100;
+            	this.prevX = Math.random() * (innerWidth - this.width);
+            	this.prevY = -this.height - 100;
+            }
+
+			//Ship's scoring values
+			if (this.type == 0) {
+	            this.scoreValue = Math.floor(this.body.width + Math.abs(this.body.dx) * 2);
+	        }
+	        else if (this.type == 1) {
+	        	this.scoreValue = 250;
+	        }
+
+            //Controls the ship
+            this.update = function() {
+            	if (this.type == 0) {
+	                if (this.body.y < this.maxY) {
+	                    this.body.dy = 1;
+	                } else {
+	                    this.body.dy = 0;
+	                }
+
+	                if (this.body.dy == 0) {
+	                    this.body.dx = this.dx;
+	                }
+
+	                if (this.body.x + this.dx < 0 || this.body.x + this.body.width + this.dx > canvas.width) {
+	                    this.dx = -this.dx;
+	                }
+
+	                if (Math.random() < .006 && this.shootTimer < 0) {
+	                    this.shoot();
+	                    this.shootTimer = 100;
+	                }
+	            }
+
+	            if (this.type == 1) {
+	            	//Draw warp line between locations
+	            	if (this.shootTimer > 95) {
+	            		c.beginPath();
+	            		c.moveTo(this.prevX, this.prevY);
+	            		c.lineTo(this.body.center()[0], this.body.center()[1]);
+	            		c.lineWidth = 3;
+	            		c.strokeStyle = this.color;
+	            		c.stroke();
+	            	}
+	            	else {
+	            		this.body.color = this.color;
+	            	}
+
+	            	//Shoot just before warping
+	            	if (this.shootTimer == 15) {
+	            		this.shoot();
+	            	}
+
+	            	//Warp ship
+	            	if (this.shootTimer == 0) {
+	            		this.prevX = this.body.center()[0];
+	            		this.prevY = this.body.center()[1];
+
+	            		for (p = 0; p < 5; p++) {
+	            			makeParticle((this.body.x + this.body.x2) / 2, (this.body.y + this.body.y2) / 2, 2, this.color);
+	            		}
+
+	            		this.body.x = Math.random() * (innerWidth - this.width);
+	            		this.body.y = Math.random() * (innerHeight / 2 - this.height) + this.height;
+	            		this.shootTimer = 100;
+	            		this.warpTimes--;
+
+	            		if (this.warpTimes <= 0) {
+	            			this.body.on = false;
+	            		}
+	            	}
+	            }
+
+	            this.body.update();
+	            this.shootTimer--;
+            }
+
+            //Makes ships shoot
+            this.shoot = function() {
+                var size = this.body.width / 3;
+                var x = this.body.x + this.body.width / 2 - size / 2;
+                var y = this.body.y + this.body.height + size;
+
+                //Shoots in general direction of the player
+                if (this.type == 0) {
+	                if (this.body.x + this.body.width / 2 < player.x + player.width / 2) {
+	                    var dx = Math.random() * 3;
+	                } else {
+	                    var dx = Math.random() * -3;
+	                }
+	                var dy = this.bulletSpeed;
+	            }
+
+	            //Aims at player
+	            if (this.type == 1) {
+	            	var xDistance = player.center()[0] - this.body.center()[0];
+	            	var yDistance = player.center()[1] - this.body.center()[1];
+	            	var dx = Math.cos(Math.atan2(yDistance, xDistance)) * this.bulletSpeed;
+	            	var dy = Math.sin(Math.atan2(yDistance, xDistance)) * this.bulletSpeed;
+	            }
+
+                bullets.push(new Body(x, y, size, size, dx, dy, "square", "Tomato", "enemy"));
+            }
+        }
+
+        //This contains the drawing and position of an entity (ship, square)
+        function Body(x, y, width, height, dx, dy, shape, color, parent = undefined) {
+            this.x = x;
+            this.y = y;
+            this.x2 = x + width;
+            this.y2 = y + height;
+            this.dx = dx;
+            this.dy = dy;
+            this.width = width;
+            this.height = height;
+            this.shape = shape;
+            this.color = color;
+            this.parent = parent;
+            this.on = true;
+
+            this.draw = function() {
+            	if (this.on) {
+                	drawBody(this.x, this.y, this.width, this.height, this.shape, this.color);
+            	}
+            }
+
+            //Redraws this body at it's new location
+            this.update = function() {
+                if (this.on) {
+                    this.x += this.dx;
+                    this.y += this.dy;
+
+                    this.x2 = this.x + this.width;
+                    this.y2 = this.y + this.height;
+
+                    this.draw();
+                }
+            }
+
+            this.collidesWith = function(other) {
+                if (this.on && other.on && this.x <= other.x2 && this.x2 >= other.x &&
+                    this.y <= other.y2 && this.y2 >= other.y) {
+                    return true;
+                }
+            }
+
+            this.center = function() {
+            	return [[(this.x + this.x2) / 2],[(this.y + this.y2) / 2]];
+            }
+        }
+
+        //Score labels
+        function ScoreLabel(x, y, value) {
+        	this.x = x;
+        	this.y = y;
+        	this.value = value;
+        	this.color = "hsl(" + colorCount + ", 85%, 85%)";
+        	this.on = true;
+        	this.dy = .5;
+
+        	this.draw = function() {
+	        	c.font = "35px Monospace";
+	        	c.fillStyle = this.color;
+	        	c.fillText(this.value, this.x, this.y);
+        	}
+
+        	this.update = function() {
+        		if (this.on) {
+        			this.y -= this.dy;
+	        		this.dy *= .9925;
+	        		this.draw();
+
+	        		if (this.dy < .1) {
+	        			this.on = false;
+	        		}
+	        	}
+        	}
+        }
+
+        /**************
+         Draw functions 
+         **************/
+        function drawBody(x, y, width, height, shape, color) {
+            if (shape == "shipA") {
+                drawBox(x, y, width, height, color);
+                drawBox(x + width / 2 - width / 8, y - height / 4, width / 4, height / 4, color);
+            }
+
+            if (shape == "shipB") {
+                drawBox(x, y, width, height, color);
+                drawBox(x, y - height / 4, width / 3, height / 4, color);
+                drawBox(x + width - width / 3, y - height / 4, width / 3, height / 4, color);
+                drawBox(x + width / 2 - width / 6, y + height, width / 3, height / 4, color);
+            }
+
+            if (shape == "square") {
+                drawBox(x, y, width, height, color);
+            }
+        }
+
+        function drawBox(x, y, width, height, color) {
+            c.beginPath();
+            c.rect(x, y, width, height);
+            c.fillStyle = color;
+            c.fill();
+            c.closePath();
+        }
+
+        function drawScore(value) {
+        	c.font = "50px Monospace";
+        	c.fillStyle = "White";
+        	c.fillText("Score: " + value, 30, 70);
+
+        	if (shootBonusTime > 0) {
+        		drawBox(30, 85, shootBonusTime, 10, "#6ae");
+        	}
+        	if (movmentBonusTime > 0) {
+        		drawBox(30, 95, movmentBonusTime / 2, 10, "#6e7");
+        	}
+        	if (invincibilityTime > 0) {
+        		drawBox(30, 105, invincibilityTime / 2, 10, "#766");
+        	}
+        }
+
+        /********************
+         Generation functions
+         ********************/
+        function makeParticle(x, y, speed, color) {
+            size = 4;
+            dx = (Math.random() - .5) * speed;
+            dy = (Math.random() - .5) * speed;
+            shape = "square";
+            particles.push(new Body(x, y, size, size, dx, dy, "square", color));
+        }
+
+        /*********
+         Main loop 
+         *********/
+        function main() {
+            c.clearRect(0, 0, canvas.width, canvas.height);
+            drawScore(score);
+
+            //Control particles
+            if (particles.length > 0) {
+                for (i = 0; i < particles.length; i++) {
+                    particles[i].dx *= 0.993;
+                    particles[i].dy *= 0.993;
+                    //Despawn slow particles
+                    if ((Math.abs(particles[i].dx) + Math.abs(particles[i].dy)) / 2 > 0.1) {
+                        particles[i].update();
+                    }
+                }
+            }
+
+            //Draw random particle stars
+            if (Math.random() < .7) {
+            	makeParticle(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * 2, "hsl(" + Math.random() * 360 + ", 10%, 30%)")
+            }
+
+            //Control score labels
+            if (scoreLabels.length > 0) {
+            	for (i = 0; i < scoreLabels.length; i++) {
+            		scoreLabels[i].update();
+            	}
+            }
+
+            //Control player
+            if (leftPressed) {
+                player.x -= playerSpeed;
+            }
+            if (rightPressed) {
+                player.x += playerSpeed;
+            }
+
+            //Keep player in bounds
+            if (player.x + player.dx < 0) {
+                player.x = 0;
+            } else if (player.x2 + player.dx > canvas.width) {
+                player.x = canvas.width - player.width;
+            }
+
+            player.update();
+
+            //Player shoot
+            if (spacePressed) {
+                colorCount++;
+                keyTime++;
+                if (keyTime % reloadTime == 1) {
+                    bullets.push(new Body(player.x + player.width / 2 - 10, player.y - player.height / 8 - 40, 20, 40, (Math.random() - .5) / 5, -11, "square", "hsl(" + colorCount + ", 60%, 60%)"));
+                }
+            } else if (!spacePressed) {
+                if (keyTime % reloadTime != 0) {
+                    keyTime++;
+                }
+            }
+
+            //Control items and bonuses
+            if (items.length > 0) {
+	            for (i = 0; i < items.length; i++) { 
+		            items[i].update();
+		            if (items[i].body.collidesWith(player)) {
+		            	items[i].body.on = false;
+		            	items[i].activate();
+		            }
+		        }
+		    }
+
+
+		    //Control item bonuses
+		    player.color = "#fff"; //Change player to white on default
+		    reloadTime = 12;
+		    playerSpeed = 8;
+
+		    shootBonusTime--;
+		    if (shootBonusTime > 0) {
+		    	player.color = "#6ae";
+		    	reloadTime = 5;
+		    }
+
+		    movmentBonusTime--;
+		    if (movmentBonusTime > 0) {
+		    	player.color = "#6e7";
+		    	playerSpeed = 13;
+		    }
+
+		    invincibilityTime--;
+		    if (invincibilityTime > 0) {
+		    	player.color = "#766";
+		    	if (bullets.length > 0) {
+		    		for (i = 0; i < bullets.length; i++) {
+		    			if (bullets[i].collidesWith(player) && bullets[i].parent == "enemy") {
+		    				bullets[i].dy = -bullets[i].dy;
+		    				bullets[i].parent = "player";
+		    				for (j = 0; j < Math.random() * 10 + 5; j++) {
+		    					makeParticle((bullets[i].x + bullets[i].x2) / 2, bullets[i].y2, 10, "#766");
+		    				}
+		    			}
+		    		}
+		    	}
+		    }
+
+            //Control enemies
+            if (enemies.length > 0) {
+                for (i = 0; i < enemies.length; i++) {
+                    if (enemies[i].body.on) {
+                        enemies[i].update();
+
+                        //Check bullets against enemies
+                        if (bullets.length > 0) {
+                            for (j = 0; j < bullets.length; j++) {
+                                if (enemies[i].body.collidesWith(bullets[j]) && bullets[j].parent != "enemy") {
+                                    bullets[j].on = false;
+                                    enemies[i].hp -= 10;
+                                    for (k = 0; k < Math.random() * 5 + 3; k++) {
+                                        makeParticle(bullets[j].x + bullets[j].width / 2, bullets[j].y, 2, "#ccc");
+                                    }
+                                }
+                            }
+                        }
+                        //Kill dead enemies
+                        if (enemies[i].hp <= 0) {
+                        	//Add score
+                        	score += enemies[i].scoreValue;
+                        	scoreLabels.push(new ScoreLabel(enemies[i].body.center()[0] - 20, enemies[i].body.center()[1], enemies[i].scoreValue));
+
+                        	//Small chance of dropping random item
+                        	if (Math.random() < .1) {
+                        		items.push(new Item(enemies[i].body.center()[0] - 15, enemies[i].body.center()[1] - 15));
+                        	}
+
+                        	//Destroy body and make particles
+                            for (j = 0; j < enemies[i].body.width; j++) {
+                                makeParticle(enemies[i].body.x + enemies[i].body.width / 2, enemies[i].body.y + enemies[i].body.height / 2, enemies[i].body.width / 25, "hsl(" + colorCount + ", 60%, 60%)");
+                            }
+                            enemies[i].body.on = false;
+                        }
+                    }
+                }
+            }
+
+            //Generate random enemies
+            if (Math.random() < .013) {
+                enemies.push(new Ship);
+            }
+
+            //Control bullets
+            if (bullets.length > 0) {
+                //Only render last 500 bullets
+                for (i = bullets.length - 500; i < bullets.length; i++) {
+                    if (i >= 0) {
+                        if (bullets[i].y + bullets[i].height < 0 || bullets[i].y > canvas.height) {
+                            bullets[i].on = false;
+                        }
+                        if (bullets[i].collidesWith(player) && bullets[i].parent == "enemy") {
+                            location.reload();
+                        }
+                        bullets[i].update();
+                    }
+                }
+            }
+
+            requestAnimationFrame(main);
+        }
+
+        /**************
+         Control inputs 
+         **************/
+        document.addEventListener("keydown", keyDownHandler, false);
+        document.addEventListener("keyup", keyUpHandler, false);
+        window.addEventListener("resize", function() {
+            resize();
+        });
+
+        var rightPressed = false;
+        var leftPressed = false;
+        var spacePressed = false;
+
+        var keyTime = 0;
+
+        function keyDownHandler(e) {
+            if (e.keyCode == 37) {
+                leftPressed = true;
+            } else if (e.keyCode == 39) {
+                rightPressed = true;
+            } else if (e.keyCode == 32) {
+                spacePressed = true;
+            }
+        }
+
+        function keyUpHandler(e) {
+            if (e.keyCode == 37) {
+                leftPressed = false;
+            } else if (e.keyCode == 39) {
+                rightPressed = false;
+            } else if (e.keyCode == 32) {
+                spacePressed = false;
+            }
+        }
+
+        resize();
+        main();
+    </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			* {
+				font-family: Helvetica;
+			}
+			h1 {
+				color: #FFF;
+				font-size: 5em;
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>THANOS CAR</h1>
+		<script>
+			var html = document.getElementsByTagName('html')[0];
+			
+			function changeRainbow() {
+				var random = Math.random() * 360;
+				html.style.backgroundColor = "hsl(" + random + ", 30%, 30%";
+			}
+			
+			setInterval(changeRainbow, 50);
+		</script>
+	</body>
+</html>

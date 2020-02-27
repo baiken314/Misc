@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Keyboard Tiles</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		canvas {
+			display: block;
+			background-color: #222;
+			margin: 0 auto;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="mainCanvas"></canvas>
+	<script type="text/javascript">
+		var canvas = document.getElementById("mainCanvas");
+		var c = canvas.getContext('2d');
+
+		canvas.width = innerWidth;
+		canvas.height = window.innerHeight;
+
+		var tileWidth = 100;
+		var tileHeight = tileWidth * 1;
+		var tileSpeed = -tileWidth / 20;
+		var tileLetters = [
+			["a", "Tomato"],
+			["s", "Orange"],
+			["d", "MediumSeaGreen"],
+			["f", "DodgerBlue"],
+			//["k", "SlateBlue"],
+			//["l", "Violet"],
+		];
+		var tiles = [];
+
+		var tileCount = 0;
+
+		function init() {
+			tiles = [];
+			tileCount = 0;
+			makeRandomTile();
+		}
+
+		/* Classes */
+		function Tile(x, y, letterIndex, dy, type="hit", isOn=true) {
+			this.x = x;
+			this.y = y;
+			this.letterIndex = letterIndex;
+			this.dy = dy;
+			this.type = type;
+			this.isOn = isOn;
+
+			this.letter = tileLetters[letterIndex][0];
+			this.color = tileLetters[letterIndex][1];
+
+			this.draw = function() {
+				drawTile(this.x, this.y, tileWidth, tileHeight, this.letter, this.color);
+			}
+
+			/*this.checkTileHit = function() {
+				if (keyPress[i][0]) {
+					keyPress[i][1]++;
+					if (keyPress[i][1] == 1 && this.letterIndex == i) {
+						this.isOn = false;
+						tileCount++;
+					}
+				} else {
+					keyPress[i][1] = 0;
+				}
+			}*/
+
+			this.update = function() {
+				if (this.isOn) {
+					this.y += this.dy;
+
+					this.draw();
+				}
+			}
+		}
+
+		/* Game functions */
+		function makeRandomTile() {
+			var random = parseInt(Math.random() * tileLetters.length);
+			var x = tileWidth * random;
+			var y = 0 - tileHeight;
+
+			tiles.push(new Tile(x, y, random, -tileSpeed));
+		}
+
+		function checkTileHit() {
+			for (i=0; i < keyPress.length; i++) {
+				if (keyPress[i][0]) {
+					keyPress[i][1]++;
+					if (keyPress[i][1] == 1 && tiles[tileCount].letterIndex == i) {
+						tiles[tileCount].isOn = false;
+						tileCount++;
+					}
+				} else {
+					keyPress[i][1] = 0;
+				}
+			}
+		}
+
+		/* Drawing functions */
+		function drawTile(x, y, width, height, letter, color, letterColor="#fff") {
+			var letterWidth = width * .6;
+			var letterHeight = height * .6;
+			var letterX = x + width * .2;
+			var letterY = y + height * .2;
+			drawBox(x, y, width, height, color);
+			drawLetter(letterX, letterY, letterWidth, letterHeight, letter, letterColor);
+		}
+
+		function drawLetter(x, y, width, height, letter, color) {
+			var xUnit = width / 4;
+			var yUnit = height / 4;
+			switch (letter) {
+				case "a":
+					drawPix(0, 1, 1, 3);
+					drawPix(3, 1, 1, 3);
+					drawPix(1, 0, 2, 1);
+					drawPix(1, 2, 2, 1);
+					break;
+				case "s":
+					drawPix(1, 0, 3, 1);
+					drawPix(0, 1, 2, 1);
+					drawPix(2, 2, 2, 1);
+					drawPix(0, 3, 3, 1);
+					break;
+				case "d":
+					drawPix(0, 0, 1, 4);
+					drawPix(1, 0, 2, 1);
+					drawPix(1, 3, 2, 1);
+					drawPix(3, 1, 1, 2);
+					break;
+				case "f":
+					drawPix(0, 0, 1, 4);
+					drawPix(1, 0, 3, 1);
+					drawPix(1, 2, 2, 1);
+					break;
+				case "g":
+					drawPix(0, 0, 4, 1);
+					drawPix(0, 1, 1, 3);
+					drawPix(1, 3, 3, 1);
+					drawPix(3, 2, 1, 1);
+					break;
+				case "h":
+					drawPix(0, 0, 1, 4);
+					drawPix(3, 0, 1, 4);
+					drawPix(1, 1, 2, 1);
+					break;
+				case "j":
+					drawPix(1, 0, 3, 1);
+					drawPix(2, 1, 1, 3);
+					drawPix(0, 3, 2, 1);
+					break;
+				case "k":
+					drawPix(0, 0, 1, 4);
+					drawPix(1, 2, 2, 1);
+					drawPix(2, 1, 1, 1);
+					drawPix(3, 0, 1, 1);
+					drawPix(3, 3, 1, 1);
+					break;
+				case "l":
+					drawPix(0, 0, 1, 4);
+					drawPix(1, 3, 3, 1);
+					break;
+			}
+
+			//Draws squares based on xUnits and yUnits
+			function drawPix(px, py, pWidth, pHeight) {
+				drawBox(x + px * xUnit, y + py * yUnit, pWidth * xUnit, pHeight * yUnit, color);
+			}
+		}
+
+		function drawBox(x, y, width, height, color) {
+			c.beginPath();
+			c.rect(x, y, width, height);
+			c.fillStyle = color;
+			c.fill();
+			c.closePath();
+		}
+
+		function drawGrid() {
+			for (i=0; i < tileLetters.length; i++) {
+				drawTile(i * tileWidth, canvas.height - tileWidth, tileWidth, tileWidth, tileLetters[i][0], "#444", "#999");
+			}
+			for (i=0; i < tileLetters.length + 1; i++) {
+				drawLine(i * tileWidth, 0, i * tileWidth, canvas.height, 1, "#fff");
+			}
+		}
+
+		function drawLine(x1, y1, x2, y2, width, color) {
+			c.beginPath();
+			c.moveTo(x1, y1);
+			c.lineWidth = width;
+			c.strokeStyle = color;
+			c.lineTo(x2, y2);
+			c.stroke();
+			c.closePath();
+		}
+
+		/* Main loop */
+		function main() {
+			c.clearRect(0, 0, canvas.width, canvas.height);
+
+			drawGrid();
+
+			//Make new tile when last tile reaches past bottom border
+			var tilesLength = tiles.length;
+			if (tiles[tilesLength - 1].y >= 0) {
+				makeRandomTile();
+			}
+
+			//Hit tile on keypress
+			checkTileHit();
+
+			//Update tiles
+			for (i=0; i < tiles.length; i++) {
+				tiles[i].update();
+			}
+
+			requestAnimationFrame(main);
+		}
+
+		/* Control inputs */
+		document.addEventListener("keydown", keyDownHandler, false);
+		document.addEventListener("keyup", keyUpHandler, false);
+
+		var keyPress = [
+			[false, 0],
+			[false, 0],
+			[false, 0],
+			[false, 0],
+			[false, 0],
+			[false, 0]
+		]
+
+		function keyDownHandler(e) {
+		    if (e.keyCode == 65) {
+		    	keyPress[0][0] = true;
+		    } else if (e.keyCode == 83) {
+		    	keyPress[1][0] = true;
+		    } else if (e.keyCode == 68) {
+		    	keyPress[2][0] = true;
+		    } else if (e.keyCode == 70) {
+		    	keyPress[3][0] = true;
+		    } else if (e.keyCode == 75) {
+		    	keyPress[4][0] = true;
+		    } else if (e.keyCode == 76) {
+		    	keyPress[5][0] = true;
+		    }
+		}
+
+		function keyUpHandler(e) {
+		    if (e.keyCode == 65) {
+		    	keyPress[0][0] = false;
+		    	keyPress[0][1] = 0;
+		    } else if (e.keyCode == 83) {
+		    	keyPress[1][0] = false;
+		    	keyPress[1][1] = 0;
+		    } else if (e.keyCode == 68) {
+		    	keyPress[2][0] = false;
+		    	keyPress[2][1] = 0;
+		    } else if (e.keyCode == 70) {
+		    	keyPress[3][0] = false;
+		    	keyPress[3][1] = 0;
+		    } else if (e.keyCode == 75) {
+		    	keyPress[4][0] = false;
+		    	keyPress[4][1] = 0;
+		    } else if (e.keyCode == 76) {
+		    	keyPress[5][0] = false;
+		    	keyPress[5][1] = 0;
+		    }
+		}
+
+		init();
+		main();
+	</script>
+</body>
+</html>

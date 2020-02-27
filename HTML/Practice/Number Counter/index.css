@@ -1,0 +1,54 @@
+* {
+    margin-left: 3%;
+    margin-right: 3%;
+}
+
+.center {
+    margin: auto;
+    text-align: center;
+    width: 50%;
+}
+
+.interest-border {
+    border-left-style: solid;
+    border-color: Tomato;
+    border-width: 4px;
+    padding-left: 8px;
+}
+
+body {
+    background-color: #303030;
+}
+
+h1 {
+    color: MediumSeaGreen;
+    font-size: 2.5em;
+    font-family: Monospace, Sans-Serif;
+    text-align: center;
+}
+
+h2 {
+    color: DodgerBlue;
+    font-size: 2.2em;
+    font-family: Monospace, Sans-Serif;
+}
+
+p {
+    color: DodgerBlue;
+    font-size: 1.3em;
+    font-family: Monospace, Sans-Serif;
+}
+
+table, th, td {
+    border: 5px solid Tomato;
+    border-collapse: collapse;
+    padding-bottom: 20px;
+    
+    font-size: 1em;
+    font-family: Monospace, Sans-Serif;
+    color: Violet;
+}
+
+th, td {
+    padding: 5px;
+}

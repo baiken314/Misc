@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>Saluton katoj</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="arangxo.css" rel="stylesheet"/>
+	<link href="stilo.css" rel="stylesheet"/>
+	<style>
+		* {
+			box-sizing: border-box;
+			font-family: monospace;
+		}
+
+		html {
+			background-color: #070707;
+		}
+
+		html, body {
+			margin: 0;
+			padding: 0;
+		}
+
+		/* Text styles */
+		h1, h2, h3, h4 {
+			color: #eee;
+			margin: 3px;
+		}
+
+		p {
+			color: #bbb;
+			font-size: 1.2em;
+			margin: 9px 17px 0px 17px;
+			text-indent: 25px;
+		}
+
+		h1 {
+			background-color: #222;
+			font-size: 4em;
+			letter-spacing: .2em;
+			text-align: center;
+			padding: 5px;
+			margin: 5px;
+		}
+
+		h2 {
+			font-size: 2em;
+			border-left: solid 5px #aaa;
+			margin: 20px 0px 3px 20px;
+			padding-left: 8px;
+		}
+
+		h3 {
+			font-size: 1.7em;
+		}
+
+		h4 {
+			font-size: 1.4em;
+		}
+
+		/* Container styles */
+		#container {
+			width: 95%;
+			min-width: 400px;
+			max-width: 850px;
+			margin: auto;
+			padding: 10px;
+			background-color: #333;
+		}
+
+		#container::after {
+			clear: both;
+			content: "";
+			display: table;
+		}
+
+		aside {
+			padding: 5px;
+			margin: 10px;
+			text-align: center;
+			background-color: #444;
+			border: solid 5px #111;
+		}
+
+		aside img {
+			border: solid 5px #111;
+			margin: 10px;
+		}
+
+		aside p {
+			text-align: justify;
+			margin: 0px 6px 0px 6px;
+		}
+
+		aside h4 {
+			color: #ccc;
+		}
+
+		/* For mobile phones: */
+		[class*="col-"] {
+		    width: 100%;
+		}
+
+		@media only screen and (max-width: 700px) {
+			div {
+				float: none;
+			}
+		}
+
+		@media only screen and (min-width: 700px) {
+		    /* For desktop: */
+		    .col-1 {width: 8.33%;}
+		    .col-2 {width: 16.66%;}
+		    .col-3 {width: 25%;}
+		    .col-4 {width: 33.33%;}
+		    .col-5 {width: 41.66%;}
+		    .col-6 {width: 50%;}
+		    .col-7 {width: 58.33%;}
+		    .col-8 {width: 66.66%;}
+		    .col-9 {width: 75%;}
+		    .col-10 {width: 83.33%;}
+		    .col-11 {width: 91.66%;}
+		    .col-12 {width: 100%;}
+
+		    div.left {
+				float: left;
+			}
+
+			div.right {
+				float: right;
+			}
+		}
+	</style>
+</head>
+<body>
+	<div id="container">
+		<header>
+			<h1 id="rainbow">SALUTON KATOJ</h1>
+			<!-- Make rainbow title -->
+			<script type="text/javascript">
+				var heading = document.getElementById("rainbow");
+				var color = 0;
+
+				function changeColor() {
+					color++;
+					heading.style.color = "hsl(" + color + ", 50%, 50%";
+				}
+
+				setInterval(changeColor, 10);
+			</script>
+		</header>
+		<div class="col-5 right">
+			<aside>
+				<h3>Katoj estas tiom bonaj</h3>
+				<p>Ili tiom bonas ĉar ili ofte plifeliĉigas aliajn aŭ pene aŭ senpene, kaj tio montras bonecon en iliaj intencoj. Tial ili petas manĝaĵojn, por havi pli da energio por feliĉigi!</p>
+				<img src="kato.jpg_large" alt="Beloranĝkolora kato" width="80%"/>
+				<h4>Jen Feliĉa Kuŝanto</h4>
+			</aside>
+		</div>
+		<div class="col-7 left">
+			<h2>Jen unu el miaj plej ŝatataj katoj</h2>
+			<p>Fakte tiu subtitolo estas iomete malklare pensiga, ĉar ĉiuj katoj estas miaj plej ŝatataj, kial kato ne povus esti pleje ŝatata de oni, ĉu ne?</p>
+			<p>In facilisis tincidunt ante eu volutpat. Fusce volutpat consequat odio facilisis tristique. Cras id fermentum tortor. Aenean posuere consectetur feugiat. Sed quis purus condimentum, posuere felis vel, venenatis justo. Fusce pharetra bibendum magna ac sodales. Suspendisse eu lorem ac leo faucibus imperdiet. Proin viverra, lacus in lobortis pulvinar, lacus lectus volutpat magna, non dictum nunc neque id lorem. Fusce at porttitor leo, sit amet dictum quam. Cras eu lacus quis urna sodales fermentum. Aliquam posuere felis consequat, varius enim et, hendrerit lorem. Nulla eu urna sed massa sodales congue at sollicitudin augue.</p>
+			<h2>Alia titolo</h2>
+			<p>Suspendisse blandit mauris vitae tellus viverra, eu lacinia ligula tempus. Suspendisse suscipit imperdiet ornare. Suspendisse efficitur mattis pulvinar. Nullam accumsan, dolor vitae tincidunt euismod, felis lorem mattis urna, id facilisis felis tellus sed velit. Maecenas a ex metus. Sed at malesuada lorem, in vulputate erat. Vestibulum vel est pretium, auctor arcu id, commodo urna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Curabitur velit augue, tempus sed dolor a, convallis hendrerit est. Etiam in urna nec sem semper cursus.</p>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<!-- Warning, do not look at this for too long -->
+<html>
+<head>
+	<title>YEAH</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		canvas {
+			margin: 0 auto;
+			display: block;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="mainCanvas"></canvas>
+	<script>
+		var canvas = document.getElementById("mainCanvas");
+		var c = canvas.getContext('2d');
+
+		canvas.width = innerWidth;
+		canvas.height = innerHeight;
+
+		var squareSize = 10;
+
+		var xCount = parseInt(canvas.width / squareSize) + 1;
+		var yCount = parseInt(canvas.height / squareSize) + 1;
+
+		function drawGrid() {
+			for (y=0; y < yCount; y++) {
+				for (x=0; x < xCount; x++) {
+					var random = parseInt(Math.random() * 255);
+					var random2 = parseInt(Math.random() * 255);
+					var random3 = parseInt(Math.random() * 255);
+					var randomColor = "rgb(" + random + ", " + random2 + ", " + random3 + ")";
+					drawSquare(x, y, randomColor);
+				}
+			}
+		}
+
+		function drawSquare(x, y, color) {
+			c.beginPath();
+			c.rect(x * squareSize, y * squareSize, squareSize, squareSize);
+			c.fillStyle = color;
+			c.fill();
+			c.closePath();
+		}
+
+		function main() {
+			c.clearRect(0, 0, canvas.width, canvas.height);
+
+			drawGrid();
+
+			requestAnimationFrame(main);
+		}
+
+		main();
+	</script>
+</body>
+</html>

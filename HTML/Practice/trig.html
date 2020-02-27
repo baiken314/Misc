@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Trig Practice</title>
+	<style type="text/css">
+		* {
+			margin: 0;
+		}
+
+		canvas {
+			background-color: #000;
+			display: block;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+	<script type="text/javascript">
+		var canvas = document.getElementById("canvas");
+		var c = canvas.getContext("2d");
+
+		canvas.width = innerWidth;
+		canvas.height = innerHeight;
+
+		var count = 0;
+		var circles = [];
+
+		var generationPointX = 123;
+		var generationPointY = 123;
+		var xDistance;
+		var yDistance;
+
+		var greenCircle = new Circle(234, 400, 0, 0, 5, "#0f0");
+		circles.push(greenCircle);
+		var blueCircle = new Circle(100, 150, 0, 0, 5, "#00f");
+		circles.push(blueCircle);
+
+		function Circle(x, y, dx, dy, radius, color) {
+			this.x = x;
+			this.y = y;
+			this.dx = dx;
+			this.dy = dy;
+			this.radius = radius;
+			this.color = color;
+
+			this.draw = function() {
+				c.beginPath();
+				c.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+				c.fillStyle = this.color;
+				c.fill();
+				c.closePath();
+			}
+
+			this.update = function() {
+				this.x += this.dx;
+				this.y += this.dy;
+
+				this.draw();
+			}
+		}
+
+		function main() {
+			c.clearRect(0, 0, canvas.width, canvas.height)
+
+			count++;
+			if (count >= 10) {
+				count = 0;
+				xDistance = greenCircle.x - generationPointX;
+				yDistance = greenCircle.y - generationPointY;
+				xDistance2 = blueCircle.x - generationPointY;
+				yDistance2 = blueCircle.y - generationPointY;
+
+				var dx = Math.cos(Math.atan2(yDistance, xDistance));
+				var dy = Math.sin(Math.atan2(yDistance, xDistance));
+
+				var dx2 = Math.cos(Math.atan2(yDistance2, xDistance2));
+				var dy2 = Math.sin(Math.atan2(yDistance2, xDistance2));
+
+				circles.push(new Circle(generationPointX, generationPointY, dx, dy, 3, "#f00"));
+				circles.push(new Circle(generationPointX, generationPointY, 0, dy, 3, "#f00"));
+				circles.push(new Circle(generationPointX, generationPointY, dx, 0, 3, "#f00"));
+				circles.push(new Circle(generationPointX, generationPointY, dx2, dy2, 3, "#f0f"));
+				circles.push(new Circle(generationPointX, generationPointY, 0, dy2, 3, "#f0f"));
+				circles.push(new Circle(generationPointX, generationPointY, dx2, 0, 3, "#f0f"));
+			}
+
+			if (circles.length > 0) {
+				for (i = 0; i < circles.length; i++) {
+					circles[i].update();
+				}
+			}
+
+			requestAnimationFrame(main);
+		}
+
+		main();
+	</script>
+</body>
+</html>

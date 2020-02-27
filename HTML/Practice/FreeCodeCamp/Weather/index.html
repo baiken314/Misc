@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>La Loka Vetero</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+	<div id="ĉefa-ujo">
+		<h1>CURRENT LOCAL WEATHER</h1>
+		<div id="veterbloko">
+			<div id="maldekstra">
+				<img id="bildeto" src="#">
+				<p id="priskribo"></p>
+				<p id="temperaturo"></p>
+			</div>
+			<div id="dekstra">
+				<h6>Your location:</h6>
+				<p id="loko"></p>
+				<h6>Wind speed and direction:</h6>
+				<p id="ventrapideco"></p>
+				<p id="ventdirekto"></p>
+				<h6>Your coordinates:</h6>
+				<div id="lokpunktoj">
+					<p id="latitudo"></p>
+					<p id="longitudo"></p>
+				</div>
+			</div>
+		</div>
+		<button id="ŝanĝilo" onclick="ŝanĝiMezuron()"> C&deg; ~ F&deg; </button>
+	</div>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script src="code.js"></script>
+</body>
+</html>
